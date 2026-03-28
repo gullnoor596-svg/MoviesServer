@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hollywood Movie Store</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #111;
+            color: white;
+        }
+        h1 {
+            text-align: center;
+            padding: 15px;
+            background: black;
+        }
+        .search-container {
+            text-align: center;
+            margin: 15px;
+        }
+        .search-container input {
+            padding: 10px;
+            width: 250px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: none;
+        }
+        .category {
+            padding: 10px;
+        }
+        .category h2 {
+            color: #00ff88;
+        }
+        .grid {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding-bottom: 20px;
+        }
+        .movie {
+            min-width: 180px;
+            background: #222;
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .movie img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .movie h3 {
+            margin: 5px;
+            font-size: 14px;
+        }
+        .download {
+            display: block;
+            background: #00ff88;
+            color: black;
+            padding: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .pagination {
+            text-align: center;
+            margin: 15px 0;
+        }
+        .pagination button {
+            background: #00ff88;
+            color: black;
+            border: none;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🎬 Hollywood Movies</h1>
+
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search movies...">
+</div>
+
+<div id="categoriesContainer"></div>
+
+<div class="pagination">
+    <button id="prevBtn">⬅ Previous</button>
+    <span id="pageInfo"></span>
+    <button id="nextBtn">Next ➡</button>
+</div>
+
+<script>
+const TOTAL_MOVIES = 15000;
+const MOVIES_PER_PAGE = 50;
+let currentPage = 1;
+
+// ✅ Manual movies
+let manualMovies = [
+    { name: "Hollywood 1", img: "https://www.filmyzilla34.com/site_uploads/duplicate/thumb_Ip-man-and-four-kings-(2021)-hindi-dubbed.jpg", link: "videos/hollywood1.mp4" },
+    { name: "Hollywood 2", img: "https://www.filmyzilla34.com/site_uploads/duplicate/thumb_Ip-man-and-four-kings-(2021)-hindi-dubbed.jpg", link: "videos/hollywood2.mp4" },
+    { name: "Hollywood 3", img: "https://www.filmyzilla34.com/site_uploads/duplicate/thumb_Ip-man-and-four-kings-(2021)-hindi-dubbed.jpg", link: "videos/hollywood3.mp4" },
+    { name: "Hollywood 4", img: "https://www.filmyzilla34.com/site_uploads/duplicate/thumb_Ip-man-and-four-kings-(2021)-hindi-dubbed.jpg", link: "videos/hollywood4.mp4" }
+];
+
+// ✅ Auto-generate rest
+let autoMovies = [];
+for (let i = manualMovies.length + 1; i <= TOTAL_MOVIES; i++) {
+    autoMovies.push({
+        name: `Hollywood ${i}`,
+        img: " ",
+        link: `videos/hollywood${i}.mp4`
+    });
+}
+
+let categories = [
+    { name: "Hollywood Movies", movies: [...manualMovies, ...autoMovies] }
+];
+
+let container = document.getElementById("categoriesContainer");
+let pageInfo = document.getElementById("pageInfo");
+let prevBtn = document.getElementById("prevBtn");
+let nextBtn = document.getElementById("nextBtn");
+let searchInput = document.getElementById("searchInput");
+
+let filteredMovies = categories[0].movies; // Start with all movies
+
+// ✅ Display movies function
+function displayMovies(page = 1) {
+    container.innerHTML = "";
+    const startIndex = (page - 1) * MOVIES_PER_PAGE;
+    const endIndex = Math.min(startIndex + MOVIES_PER_PAGE, filteredMovies.length);
+    const moviesToShow = filteredMovies.slice(startIndex, endIndex);
+
+    let section = document.createElement("div");
+    section.className = "category";
+    section.innerHTML = `<h2>${categories[0].name}</h2>`;
+    let grid = document.createElement("div");
+    grid.className = "grid";
+
+    moviesToShow.forEach(m => {
+        let box = document.createElement("div");
+        box.className = "movie";
+        box.innerHTML = `
+            <img src="${m.img}" alt="${m.name}">
+            <h3>${m.name}</h3>
+            <a class="download" href="${m.link}" target="_blank">Download</a>
+        `;
+        grid.appendChild(box);
+    });
+
+    section.appendChild(grid);
+    container.appendChild(section);
+
+    pageInfo.textContent = `Page ${currentPage} of ${Math.ceil(filteredMovies.length / MOVIES_PER_PAGE)}`;
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === Math.ceil(filteredMovies.length / MOVIES_PER_PAGE);
+}
+
+// ✅ Pagination buttons
+prevBtn.addEventListener("click", () => {
+    if (currentPage > 1) { currentPage--; displayMovies(currentPage); }
+});
+nextBtn.addEventListener("click", () => {
+    if (currentPage < Math.ceil(filteredMovies.length / MOVIES_PER_PAGE)) { currentPage++; displayMovies(currentPage); }
+});
+
+// ✅ Search functionality
+searchInput.addEventListener("input", () => {
+    const query = searchInput.value.toLowerCase();
+    filteredMovies = categories[0].movies.filter(m => m.name.toLowerCase().includes(query));
+    currentPage = 1; // Reset to first page
+    displayMovies(currentPage);
+});
+
+// Initial display
+displayMovies(currentPage);
+</script>
+
+</body>
+</html>
