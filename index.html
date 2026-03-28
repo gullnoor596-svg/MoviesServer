@@ -8,10 +8,10 @@
         .search-container { text-align:center; margin:15px; }
         .search-container input { padding:10px; width:250px; font-size:14px; border-radius:5px; border:none; }
         .grid { display:flex; flex-wrap:wrap; gap:10px; padding:10px; }
-        /* 4 movies per row */
+        /* 2 movies per row */
         .movie {
-            flex: 0 0 calc(25% - 10px);
-            box-sizing: border-box;
+            flex: 0 0 calc(50% - 10px);
+            box-sizing:border-box;
             background:#222;
             border-radius:10px;
             overflow:hidden;
@@ -21,8 +21,7 @@
         .movie img { width:100%; height:200px; object-fit:cover; }
         .movie h3 { margin:5px; font-size:14px; }
         .download { display:block; background:#00ff88; color:black; padding:8px; text-decoration:none; font-weight:bold; }
-        /* Responsive: 1 per row on small screens, 2 per row on medium */
-        @media(max-width:900px){ .movie { flex:0 0 calc(50% - 10px); } }
+        /* Responsive: 1 per row on small screens */
         @media(max-width:600px){ .movie { flex:0 0 100%; } }
     </style>
 </head>
@@ -37,8 +36,8 @@
 <div class="grid" id="movieGrid"></div>
 
 <script>
-const TOTAL_MOVIES = 15000; // You can increase to 30000
-const LOAD_COUNT = 50; // Movies loaded per batch
+const TOTAL_MOVIES = 1500; // can increase to 30000
+const LOAD_COUNT = 50; // load 50 movies per scroll
 let allMovies = [];
 let filteredMovies = [];
 let loadedCount = 0;
