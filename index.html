@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My App Store</title>
+<title>MOD GAMES</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 :root{
@@ -12,8 +12,8 @@
     --text-color:#fff;
     --card-bg:rgba(255,255,255,0.05);
     --search-bg:#222;
-    --drawer-width:130px;  
-    --drawer-height:75%;  
+    --drawer-width:115px;  
+    --drawer-height:70%;  
 }
 
 /* BODY */
@@ -41,7 +41,7 @@ body{
     position: absolute; 
     top: 10px;
     left: 15px;
-    font-size:30px;
+    font-size:20px;
     background:linear-gradient(45deg,#00ff88,#00ccff);
     border:none;
     padding:5px;
@@ -53,12 +53,12 @@ body{
 /* SEARCH BAR */
 .search{
     text-align:center;
-    padding:100px 10px 40px 10px;
+    padding:30px 10px 50px 10px; /* header ke neeche sahi gap */
 }
 .search input{
-    width:90%;
+    width:80%;
     max-width:400px;
-    padding:10px 15px;
+    padding:15px 15px;
     border-radius:20px;
     border:none;
     background: var(--search-bg);
@@ -124,7 +124,7 @@ body{
     content:"";
     position:absolute;
     inset:0;
-    padding:3px;
+    padding:1px;
     border-radius:0 25px 500px 0;
     background:linear-gradient(270deg,#00ff88,#00ccff,#ff00ff,#00ff88);
     background-size:600% 600%;
@@ -139,7 +139,7 @@ body{
 }
 .drawer a{
     padding:15px;
-    font-size:13px;
+    font-size:10px;
     color: var(--highlight-color);
     text-decoration:none;
     display:block;
@@ -166,7 +166,7 @@ body{
 <!-- HEADER + Drawer -->
 <div class="header-container">
     <button id="openDrawerBtn" onclick="openDrawer()">☰</button>
-    <div class="header">App Store</div>
+    <div class="header">MOD GAMES</div>
 </div>
 
 <!-- SEARCH -->
@@ -191,15 +191,13 @@ body{
 </div>
 
 <script>
-let apps = []; // Start empty
+let apps = []; 
 
-// Function to add app dynamically
 function addCustomApp(name,img,link){
     apps.push({name,img,link});
     showApps(apps);
 }
 
-// Show apps
 let container = document.getElementById("apps");
 function showApps(list){
     container.innerHTML="";
@@ -273,13 +271,24 @@ nightBtn.addEventListener('click', ()=>{
     applyNightMode(nightMode);
 });
 
-// Example: Add apps dynamically
-addCustomApp("WhatsApp","https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg","https://www.whatsapp.com/download");
+// ADD SAMPLE APPS
+addCustomApp("Oddmar","https://play-lh.googleusercontent.com/NRQ3EOLAfYYtBdShS74jVGGyf9XNy9h__Nj4CLdmSyz0KhfmOvn1uriYw34nEF--1rOr","https://play.google.com/store/apps/details?id=com.mobge.Oddmar");
 addCustomApp("Facebook","https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg","https://www.facebook.com/");
 addCustomApp("Instagram","https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png","https://www.instagram.com/");
 addCustomApp("YouTube","https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg","https://www.youtube.com/");
 addCustomApp("TikTok","https://upload.wikimedia.org/wikipedia/en/2/2a/TikTok_logo.png","https://www.tiktok.com/");
 addCustomApp("Gamer","https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg","https://www.whatsapp.com/download");
+
+// HEADER TEXT CHANGE EVERY 3 SECONDS
+const header = document.querySelector('.header');
+const names = ["MOD GAMES", "GULLKHAN", "APK WORLD", "GAME ZONE"];
+let index = 0;
+
+setInterval(() => {
+    index = (index + 1) % names.length;
+    header.textContent = names[index];
+}, 3000); // change every 3 seconds
 </script>
+
 </body>
 </html>
