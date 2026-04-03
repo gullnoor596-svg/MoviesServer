@@ -1,58 +1,285 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Real Visitor Tracker</title>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My App Store</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-body {
-    background: #0a0a0a;
-    color: #00ffcc;
-    text-align: center;
-    font-family: Arial;
+:root{
+    --highlight-color:#00ff88;
+    --bg-color:#111;
+    --text-color:#fff;
+    --card-bg:rgba(255,255,255,0.05);
+    --search-bg:#222;
+    --drawer-width:250px;  
+    --drawer-height:40%;  
 }
-.box {
-    margin-top: 100px;
+
+/* BODY */
+body{
+    margin:0;
+    font-family:sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition:0.5s;
+}
+
+/* HEADER + Drawer Button */
+.header-container{
+    position: relative;
+}
+.header{
+    text-align:center;
+    padding:20px 15px;
+    font-size:35px;
+    font-weight:bold;
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+#openDrawerBtn{
+    position: absolute; 
+    top: 10px;
+    left: 15px;
+    font-size:30px;
+    background:linear-gradient(45deg,#00ff88,#00ccff);
+    border:none;
+    padding:5px;
+    border-radius:10px;
+    cursor:pointer;
+    z-index:1001;
+}
+
+/* SEARCH BAR */
+.search{
+    text-align:center;
+    padding:10px 10px 40px 10px;
+}
+.search input{
+    width:90%;
+    max-width:400px;
+    padding:10px 15px;
+    border-radius:20px;
+    border:none;
+    background: var(--search-bg);
+    color: var(--text-color);
+}
+
+/* APP GRID */
+.container{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    padding:10px;
+}
+
+/* CARD */
+.card{
+    background: var(--card-bg);
+    border-radius:15px;
+    padding:10px;
+    text-align:center;
+    transition: 0.5s;
+}
+.card img{
+    width:70px;
+    height:70px;
+    border-radius:15px;
+}
+.card h3{
+    margin:8px 0;
+    font-size:16px;
+}
+.btn{
+    margin-top:8px;
+    padding:6px 12px;
+    border:none;
+    border-radius:15px;
+    background:#00ff88;
+    color:#000;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+/* DRAWER */
+.drawer{
+    position:fixed;
+    top:0;
+    left:0;
+    width:0;
+    height: var(--drawer-height);
+    background:rgba(0,0,0,0.8);
+    backdrop-filter:blur(12px);
+    overflow:hidden;
+    z-index:1000;
+    transition:0.4s;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:15px;
+    padding-left:0px;
+    border-radius:0 25px 300px 0;
+}
+.drawer::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    padding:3px;
+    border-radius:0 25px 500px 0;
+    background:linear-gradient(270deg,#00ff88,#00ccff,#ff00ff,#00ff88);
+    background-size:600% 600%;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+    animation:borderMove 6s linear infinite;
+}
+@keyframes borderMove{
+    0%{background-position:0%}
+    100%{background-position:200%}
+}
+.drawer a{
+    padding:15px;
+    font-size:25px;
+    color: var(--highlight-color);
+    text-decoration:none;
+    display:block;
+    transition:0.5s;
+    z-index:1002;
+    border-radius:10px;
+}
+.drawer a:hover{
+    background:rgba(0,255,136,0.2);
+    color:#fff;
+}
+.closebtn{
+    position:absolute;
+    right:15px;
+    top:10px;
+    font-size:50px;
+    cursor:pointer;
+    z-index:1003;
 }
 </style>
 </head>
-
 <body>
 
-<div class="box">
-    <h1>🔥 Visitors Tracker</h1>
-    <h2 id="count">Loading...</h2>
+<!-- HEADER + Drawer -->
+<div class="header-container">
+    <button id="openDrawerBtn" onclick="openDrawer()">☰</button>
+    <div class="header">App Store</div>
+</div>
+
+<!-- SEARCH -->
+<div class="search">
+    <input type="text" id="search" placeholder="Search apps...">
+</div>
+
+<!-- APP GRID -->
+<div class="container" id="apps"></div>
+
+<!-- DRAWER -->
+<div id="myDrawer" class="drawer">
+    <span class="closebtn" onclick="closeDrawer()">×</span>
+    <a href="javascript:void(0)" id="drawerNightToggle"><i id="nightIcon">🌙</i> Night Mode</a>
+    <a href="https://www.youtube.com/" target="_blank"><i class="fab fa-youtube"></i> YouTube</a>
+    <a href="https://www.facebook.com/" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
+    <a href="https://www.instagram.com/" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
+    <a href="https://whatsapp.com/" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+    <a href="https://www.tiktok.com/" target="_blank"><i class="fab fa-tiktok"></i> TikTok</a>
+    <a href="#" onclick="shareWebsite()"><i class="fas fa-share-alt"></i> Share</a>
+    <a href="javascript:void(0)" id="drawerMusicToggle"><i class="fas fa-music"></i> Music</a>
 </div>
 
 <script>
-// 🔑 TUMHARA FIREBASE CONFIG
-const firebaseConfig = {
-  databaseURL: "https://accountctf-default-rtdb.firebaseio.com/"
-};
+let apps = []; // Start empty
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+// Function to add app dynamically
+function addCustomApp(name,img,link){
+    apps.push({name,img,link});
+    showApps(apps);
+}
 
-// 👤 Unique User ID (same user reload par repeat nahi hoga)
-let userId = localStorage.getItem("userId");
-
-if (!userId) {
-    userId = "user_" + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem("userId", userId);
-
-    // 📥 Firebase me save
-    db.ref("visitors/" + userId).set({
-        time: new Date().toLocaleString()
+// Show apps
+let container = document.getElementById("apps");
+function showApps(list){
+    container.innerHTML="";
+    list.forEach(app=>{
+        container.innerHTML += `
+        <div class="card">
+            <img src="${app.img}">
+            <h3>${app.name}</h3>
+            <button class="btn" onclick="window.open('${app.link}')">Install</button>
+        </div>`;
     });
 }
 
-// 📊 Count show
-db.ref("visitors").on("value", (snapshot) => {
-    document.getElementById("count").innerText = snapshot.numChildren();
+// SEARCH
+document.getElementById("search").addEventListener("input", e=>{
+    let val = e.target.value.toLowerCase();
+    let filtered = apps.filter(a=>a.name.toLowerCase().includes(val));
+    showApps(filtered);
 });
-</script>
 
+// DRAWER
+function openDrawer(){
+    const drawer = document.getElementById("myDrawer");
+    const width = getComputedStyle(document.documentElement).getPropertyValue('--drawer-width');
+    drawer.style.width = width;
+}
+function closeDrawer(){ document.getElementById("myDrawer").style.width = "0"; }
+
+// SHARE
+function shareWebsite(){
+    const url = window.location.href;
+    if(navigator.share){ navigator.share({title:"My App Store", text:"Check this website!", url:url}); }
+    else if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=>alert("Link copied!")); }
+    else{ prompt("Copy this link:", url); }
+}
+
+// MUSIC
+const musicBtn = document.getElementById('drawerMusicToggle');
+let audio = new Audio('https://raw.githubusercontent.com/gullnoor596-svg/Gullkhanwebserver/main/Modern%20Talking%20-%20Cheri%20Cheri%20Lady%20(Lyrics)(720P_HD)(mp3).mp3');
+let isPlaying = false;
+musicBtn.addEventListener('click', ()=>{
+    isPlaying ? audio.pause() : audio.play();
+    musicBtn.innerHTML = isPlaying ? '<i class="fas fa-music"></i> Music' : '<i class="fas fa-volume-up"></i> Playing';
+    isPlaying = !isPlaying;
+});
+
+// NIGHT MODE
+const nightBtn = document.getElementById('drawerNightToggle');
+const nightIcon = document.getElementById('nightIcon');
+let nightMode = localStorage.getItem('nightMode')==='true';
+
+function applyNightMode(night){
+    if(night){
+        document.documentElement.style.setProperty('--bg-color','#111');
+        document.documentElement.style.setProperty('--text-color','#fff');
+        document.documentElement.style.setProperty('--card-bg','rgba(255,255,255,0.05)');
+        document.documentElement.style.setProperty('--search-bg','#222');
+        nightIcon.textContent='🌙';
+    } else {
+        document.documentElement.style.setProperty('--bg-color','#fff');
+        document.documentElement.style.setProperty('--text-color','#111');
+        document.documentElement.style.setProperty('--card-bg','rgba(0,0,0,0.05)');
+        document.documentElement.style.setProperty('--search-bg','#eee');
+        nightIcon.textContent='☀️';
+    }
+    localStorage.setItem('nightMode', night);
+}
+applyNightMode(nightMode);
+nightBtn.addEventListener('click', ()=>{
+    nightMode = !nightMode;
+    applyNightMode(nightMode);
+});
+
+// Example: Add apps dynamically
+addCustomApp("WhatsApp","https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg","https://www.whatsapp.com/download");
+addCustomApp("Facebook","https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg","https://www.facebook.com/");
+addCustomApp("Instagram","https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png","https://www.instagram.com/");
+addCustomApp("YouTube","https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg","https://www.youtube.com/");
+addCustomApp("TikTok","https://upload.wikimedia.org/wikipedia/en/2/2a/TikTok_logo.png","https://www.tiktok.com/");
+addCustomApp("Gamer","https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg","https://www.whatsapp.com/download");
+</script>
 </body>
 </html>
