@@ -1,31 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Real Visitor Counter</title>
+<title>Real Visitor Tracker</title>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
 <style>
 body {
-    background: black;
-    color: white;
+    background: #0a0a0a;
+    color: #00ffcc;
     text-align: center;
+    font-family: Arial;
+}
+.box {
+    margin-top: 100px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Visitors</h1>
-<h2 id="count">0</h2>
+<div class="box">
+    <h1>🔥 Visitors Tracker</h1>
+    <h2 id="count">Loading...</h2>
+</div>
 
 <script>
-let count = localStorage.getItem("visitCount");
+// 🔑 TUMHARA FIREBASE CONFIG
+const firebaseConfig = {
+  databaseURL: "https://accountctf-default-rtdb.firebaseio.com/"
+};
 
-if (!localStorage.getItem("visited")) {
-    count = count ? parseInt(count) + 1 : 1;
-    localStorage.setItem("visitCount", count);
-    localStorage.setItem("visited", "true");
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// 👤 Unique User ID (same user reload par repeat nahi hoga)
+let userId = localStorage.getItem("userId");
+
+if (!userId) {
+    userId = "user_" + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem("userId", userId);
+
+    // 📥 Firebase me save
+    db.ref("visitors/" + userId).set({
+        time: new Date().toLocaleString()
+    });
 }
 
-document.getElementById("count").innerText = localStorage.getItem("visitCount") || 1;
+// 📊 Count show
+db.ref("visitors").on("value", (snapshot) => {
+    document.getElementById("count").innerText = snapshot.numChildren();
+});
 </script>
 
 </body>
